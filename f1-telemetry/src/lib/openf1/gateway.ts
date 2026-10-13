@@ -11,4 +11,4 @@ const json:unknown=await res.json(),parsed=schema.safeParse(json); if(!parsed.su
 }
 export async function getMeetings(year:number,fetcher:Fetcher=fetch):Promise<Meeting[]>{return normalizeMeetings(await request("meetings",{year},meetingsSchema,fetcher));}
 export async function getSessions(meetingKey:number,fetcher:Fetcher=fetch):Promise<Session[]>{return normalizeSessions(await request("sessions",{meeting_key:meetingKey},sessionsSchema,fetcher));}
-export async function getSessionResults(sessionKey:number,fetcher:Fetcher=fetch):Promise<ResultRow[]>{const results=await request("session_result",{session_key:sessionKey},sessionResultsSchema,fetcher);const drivers=await request("drivers",{session_key:sessionKey},driversSchema,fetcher);return normalizeResults(results,drivers);}
+export async function getSessionResults(sessionKey:number,fetcher:Fetcher=fetch):Promise<ResultRow[]>{const results=await request("session_result",{session_key:sessionKey},sessionResultsSchema,fetcher);const drivers=await request("drivers",{session_key:sessionKey},driversSchema,fetcher);return normalizeResults(results,drivers.map(driver=>({...driver,team_colour:driver.team_colour??null})));}
