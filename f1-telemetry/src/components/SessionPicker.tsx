@@ -1,0 +1,11 @@
+"use client";
+import type { Meeting, Session } from "@/lib/domain/models";
+export const MIN_YEAR = 2023;
+export function seasonYears(currentYear: number): number[] { const years: number[] = []; for (let y=currentYear; y>=MIN_YEAR; y--) years.push(y); return years; }
+interface Props { years:number[]; year:number; onYear:(y:number)=>void; meetings:{data?:Meeting[];isLoading:boolean;isError:boolean}; meetingKey:number|null; onMeeting:(k:number)=>void; sessions:{data?:Session[];isLoading:boolean;isError:boolean}; sessionKey:number|null; onSession:(k:number)=>void; }
+export function SessionPicker(p:Props) {
+return <nav className="picker" aria-label="Seleção de sessão"><div className="field"><label htmlFor="season">Temporada</label><select id="season" value={p.year} onChange={e=>p.onYear(Number(e.target.value))}>{p.years.map(y=><option key={y} value={y}>{y}</option>)}</select></div>
+<section aria-labelledby="gp-heading"><h2 id="gp-heading">Grandes Prêmios</h2>{p.meetings.isLoading&&<p className="note" role="status">Carregando calendário…</p>}{p.meetings.isError&&<p className="note error" role="alert">Falha ao carregar o calendário. Tente novamente em instantes.</p>}{p.meetings.data?.length===0&&<p className="note">A fonte não retornou etapas para {p.year}.</p>}
+<ol className="rounds">{p.meetings.data?.map((m,i)=><li key={m.key}><button type="button" aria-pressed={m.key===p.meetingKey} disabled={m.cancelled} onClick={()=>p.onMeeting(m.key)}><span className="round-n">{i+1}</span><span className="round-name">{m.name}</span>{m.cancelled&&<span className="tag">cancelado</span>}</button></li>)}</ol></section>
+{p.meetingKey!=null&&<section aria-labelledby="session-heading"><h2 id="session-heading">Sessões</h2>{p.sessions.isLoading&&<p className="note" role="status">Carregando sessões…</p>}{p.sessions.isError&&<p className="note error" role="alert">Falha ao carregar as sessões.</p>}{p.sessions.data?.length===0&&<p className="note">Nenhuma sessão disponível para esta etapa.</p>}<ul className="sessions">{p.sessions.data?.map(s=><li key={s.key}><button type="button" aria-pressed={s.key===p.sessionKey} disabled={s.cancelled} onClick={()=>p.onSession(s.key)}>{s.name}{s.cancelled&&<span className="tag">cancelada</span>}</button></li>)}</ul></section>}</nav>;
+}
