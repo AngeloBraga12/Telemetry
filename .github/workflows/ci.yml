@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: f1-telemetry/package.json
+      - name: Install dependencies
+        working-directory: f1-telemetry
+        run: npm install
+      - name: Typecheck
+        working-directory: f1-telemetry
+        run: npm run typecheck
+      - name: Lint
+        working-directory: f1-telemetry
+        run: npm run lint
+      - name: Tests
+        working-directory: f1-telemetry
+        run: npm test
+      - name: Build
+        working-directory: f1-telemetry
+        run: npm run build
